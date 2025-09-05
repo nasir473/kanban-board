@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="create-task-section" style="max-width: 500px; margin: 3rem auto 0 auto;">
+    <h2 style="text-align:center; color: var(--coffee-brown);">Create Task for {{ current_workspace|title }}</h2>
+    <form method="post" action="{% url 'create_task' %}">
+        {% csrf_token %}
+        <input type="text" name="short_description" placeholder="Short description" required />
+        <textarea name="description" placeholder="Description" required></textarea>
+        <div class="form-row" style="display:flex; flex-direction:column; gap:0.5rem;">
+            <div class="form-priority-row">
+                <label for="id_priority">Priority</label>
+                <select name="priority" id="id_priority" class="form-priority-select">
+                    <option value="low">Low</option>
+                    <option value="normal" selected>Normal</option>
+                    <option value="high">High</option>
+                </select>
+            </div>
+            <div class="form-checkbox-row">
+                <label for="id_is_working">
+                    <input type="checkbox" name="is_working" id="id_is_working">
+                    <span>Someone is working</span>
+                </label>
+            </div>
+        </div>
+        <button type="submit">Add Task</button>
+    </form>
+</div>
+{% endblock %}

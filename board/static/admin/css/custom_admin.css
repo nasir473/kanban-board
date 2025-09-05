@@ -1,0 +1,50 @@
+/* custom_admin.css */
+
+/* Apply background similar to main site's cream color */
+body {
+    background: var(--cream, #f5eee6);
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+/* Header styling */
+#header, #user-tools, .breadcrumbs {
+    background: var(--coffee-brown, #a9744f);
+    color: var(--white, #fff);
+}
+
+/* Module boxes styling */
+.module, .grp-module {
+    background: var(--tan, #e7d7c1);
+    border: 1px solid var(--light-coffee, #c8ad7f);
+    border-radius: var(--border-radius, 1rem);
+    box-shadow: var(--shadow, 0 2px 8px #c8ad7f44);
+}
+
+/* Headings */
+h1, h2, h3 {
+    color: var(--coffee-brown, #a9744f);
+}
+
+/* Links */
+a {
+    color: var(--coffee-brown, #a9744f);
+}
+
+/* Override admin button styles */
+.btn, .button {
+    background: var(--coffee-brown, #a9744f);
+    color: var(--white, #fff);
+    border: none;
+    border-radius: 1rem;
+}
+
+/* Ensure variables work if not defined */
+:root {
+    --coffee-brown: #a9744f;
+    --light-coffee: #c8ad7f;
+    --cream: #f5eee6;
+    --white: #fff;
+    --tan: #e7d7c1;
+    --border-radius: 1rem;
+    --shadow: 0 2px 8px #c8ad7f44;
+}

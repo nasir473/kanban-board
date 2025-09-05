@@ -1,0 +1,247 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/x-icon" href="{% static 'new_favicon.ico' %}">
+    <title>Kanban Board</title>
+    <style>
+        /* Make sizing predictable and prevent horizontal overflow */
+        *, *::before, *::after { box-sizing: border-box; }
+        html, body { overflow-x: hidden; }
+        /* small horizontal padding so very narrow viewports don't push content out */
+        body { padding-left: 0.5rem; padding-right: 0.5rem; }
+        .navbar {
+            width: 100%;
+            background: var(--coffee-brown);
+            color: var(--white);
+            padding: 0.7rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            box-shadow: 0 2px 8px #a9744f33;
+        }
+        .navbar .nav-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+            margin-bottom: 0.3rem;
+        }
+        .navbar .nav-links {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+        .navbar .workspace-toggle {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+        .navbar .workspace-btn {
+            background: var(--light-coffee);
+            color: var(--coffee-brown);
+            border: none;
+            border-radius: 1rem;
+            padding: 0.4rem 1rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .navbar .workspace-btn.active {
+            background: var(--white);
+            color: var(--coffee-brown);
+            font-weight: 600;
+        }
+        .navbar .workspace-btn:hover {
+            background: var(--white);
+            color: var(--coffee-brown);
+        }
+        .navbar a {
+            color: var(--white);
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: 500;
+            padding: 0.4rem 1.2rem;
+            border-radius: 1.2rem;
+            transition: background 0.2s;
+        }
+        .navbar a:hover, .navbar a.active {
+            background: var(--light-coffee);
+            color: var(--coffee-brown);
+        }
+        :root {
+            --coffee-brown: #a9744f;
+            --light-coffee: #c8ad7f;
+            --cream: #f5eee6;
+            --white: #fff;
+            --tan: #e7d7c1;
+            --border-radius: 1rem;
+            --shadow: 0 2px 8px #c8ad7f44;
+        }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: var(--cream);
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            text-align: center;
+            color: var(--coffee-brown);
+            margin-top: 2rem;
+            letter-spacing: 2px;
+        }
+        .kanban-board {
+            display: flex;
+            gap: 1rem;
+            margin: 1.2rem auto;
+            max-width: 1100px;
+            width: 100%;
+            padding: 0 0.5rem;
+            overflow: visible;
+            align-items: flex-start;
+        }
+        .kanban-section {
+            /* allow sections to shrink on smaller viewports */
+            flex: 1 1 160px;
+            background: var(--tan);
+            padding: 0.7rem;
+            border-radius: var(--border-radius);
+            min-width: 150px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .kanban-section h3 {
+            color: var(--coffee-brown);
+            margin-bottom: 1rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+        .kanban-column {
+            width: 100%;
+            min-height: 120px;
+            margin-bottom: 1rem;
+        }
+        .kanban-card {
+            background: var(--white);
+            margin-bottom: 1rem;
+            padding: 1rem 1.2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            color: #5a3c1a;
+            border: 2px solid var(--light-coffee);
+            transition: box-shadow 0.2s, border 0.2s;
+        }
+        .kanban-card:active, .kanban-card:focus {
+            box-shadow: 0 4px 16px #a9744f33;
+            border: 2px solid var(--coffee-brown);
+        }
+        .kanban-card strong {
+            color: var(--coffee-brown);
+            font-size: 1.1rem;
+        }
+        .kanban-card small {
+            color: #7c5a3a;
+        }
+        .kanban-section .no-tasks {
+            color: #bca18a;
+            font-style: italic;
+        }
+        .create-task-section {
+            background: var(--light-coffee);
+            border-radius: 1rem;
+            padding: 1.2rem 1.5rem 1.5rem 1.5rem;
+            box-shadow: var(--shadow);
+            margin-top: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 600px;
+        }
+        .create-task-section h2, .create-task-section h3 {
+            color: var(--coffee-brown);
+            margin-bottom: 1.2rem;
+            font-size: 2rem;
+            font-weight: 700;
+            text-align: center;
+        }
+        .create-task-section form {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .create-task-section input,
+        .create-task-section textarea {
+            width: 100%;
+            border-radius: 1.2rem;
+            border: 1.5px solid var(--coffee-brown);
+            padding: 0.7rem 1.2rem;
+            margin-bottom: 0;
+            font-size: 1.1rem;
+            background: var(--cream);
+            color: #5a3c1a;
+            box-sizing: border-box;
+        }
+        .create-task-section textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        .create-task-section button {
+            background: var(--coffee-brown);
+            color: var(--white);
+            border: none;
+            border-radius: 2rem;
+            padding: 0.8rem 2.5rem;
+            font-size: 1.1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+            align-self: flex-start;
+            margin-top: 0.5rem;
+        }
+        .create-task-section button:hover {
+            background: #8b5c2b;
+        }
+        select {
+            border-radius: 1.2rem;
+            border: 1px solid var(--light-coffee);
+            padding: 0.3rem 1rem;
+            background: var(--cream);
+            color: #5a3c1a;
+        }
+        /* Ensure links/buttons inside the navbar don't cause overflow */
+        .navbar a, .workspace-toggle select {
+            max-width: 100%;
+        }
+    </style>
+    <link rel="stylesheet" href="{% static 'css/forms.css' %}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="workspace-toggle">
+            <form id="workspace-form" method="get" style="margin:0;">
+                <select name="workspace" id="workspace-select" onchange="this.form.submit()">
+                    {% for sp in spaces %}
+                        <option value="{{ sp }}" {% if current_workspace == sp %}selected{% endif %}>{{ sp|title }}</option>
+                    {% empty %}
+                        <option value="office" {% if current_workspace == 'office' %}selected{% endif %}>Office</option>
+                        <option value="home" {% if current_workspace == 'home' %}selected{% endif %}>Home</option>
+                    {% endfor %}
+                </select>
+            </form>
+        </div>
+        <div class="nav-links">
+            <a href="/" class="{% if request.path == '/' %}active{% endif %}">Board</a>
+            <a href="/create/" class="{% if request.path == '/create/' %}active{% endif %}">Create</a>
+        </div>
+    </nav>
+    {% block content %}{% endblock %}
+</body>
+</html>

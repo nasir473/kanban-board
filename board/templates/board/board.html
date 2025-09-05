@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% load board_extras %}
+{% block content %}
+<h1>{{ current_workspace|title }} Kanban Board</h1>
+<div class="kanban-board">
+  {% for key, label in statuses %}
+    <div class="kanban-section">
+      <h3>{{ label }}</h3>
+      <div class="kanban-column" data-status="{{ key }}">
+        {% for task in tasks_by_status|get_item:key %}
+          <a href="{% url 'task_detail' task.id %}" class="kanban-card-link" style="text-decoration:none;display:block;">
+            <div class="kanban-card" draggable="true" data-task-id="{{ task.id }}" style="position:relative;">
+              <strong>{{ task.short_description }}</strong><br>
+              <small>{{ task.description }}</small>
+              {% if task.comments %}
+                <div class="kanban-comment" style="margin-top:0.6rem;color:#7c5a3a;">
+                  {{ task.comments|truncatechars:80 }}
+                </div>
+              {% endif %}
+              {% if task.priority == 'high' %}
+                <div style="position:absolute; top:8px; right:8px; width:12px; height:12px; border-radius:50%; background:#e53935; box-shadow:0 0 4px rgba(0,0,0,0.2);"></div>
+              {% elif task.priority == 'low' %}
+                <div style="position:absolute; top:8px; right:8px; width:12px; height:12px; border-radius:50%; background:#43a047; box-shadow:0 0 4px rgba(0,0,0,0.1);"></div>
+              {% endif %}
+              {% if task.is_working %}
+                <span class="working-dot" title="Someone is working"></span>
+              {% endif %}
+            </div>
+          </a>
+        {% empty %}
+          <div class="no-tasks">No tasks</div>
+        {% endfor %}
+      </div>
+    </div>
+  {% endfor %}
+</div>
+<style>
+/* blinking orange dot for someone working */
+.working-dot {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: orange;
+  box-shadow: 0 0 6px rgba(255,165,0,0.8);
+  animation: kanban-blink 1s infinite;
+}
+@keyframes kanban-blink {
+  0% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.25; transform: scale(0.85); }
+  100% { opacity: 1; transform: scale(1); }
+}
+</style>
+<script>
+// Drag and drop logic
+const columns = document.querySelectorAll('.kanban-column');
+let draggedCard = null;
+document.addEventListener('dragstart', function(e) {
+  if (e.target.classList.contains('kanban-card')) {
+    draggedCard = e.target;
+    e.dataTransfer.effectAllowed = 'move';
+  }
+});
+columns.forEach(col => {
+  col.addEventListener('dragover', function(e) {
+    e.preventDefault();
+    this.style.background = '#e0e0e0';
+  });
+  col.addEventListener('dragleave', function(e) {
+    this.style.background = '';
+  });
+  col.addEventListener('drop', function(e) {
+    e.preventDefault();
+    this.style.background = '';
+    if (draggedCard) {
+      const taskId = draggedCard.getAttribute('data-task-id');
+      const newStatus = this.getAttribute('data-status');
+      // Send AJAX POST to update status
+      fetch(`/update/${taskId}/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'X-CSRFToken': '{{ csrf_token }}',
+        },
+        body: `status=${newStatus}`
+      }).then(() => window.location.reload());
+    }
+  });
+});
+</script>
+{% endblock %}

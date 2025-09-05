@@ -1,0 +1,18 @@
+[
+  {
+    "model": "board.space",
+    "pk": 1,
+    "fields": {
+      "name": "office",
+      "created": "2025-09-02T00:00:00Z"
+    }
+  },
+  {
+    "model": "board.space",
+    "pk": 2,
+    "fields": {
+      "name": "home",
+      "created": "2025-09-02T00:00:00Z"
+    }
+  }
+]
