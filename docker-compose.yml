@@ -1,11 +1,47 @@
-version: '3.8'
+version: "3.9"
+
 services:
   web:
-    build: .
+    build:
+      context: .            # Path to your project (where Dockerfile is located)
+      dockerfile: Dockerfile
+    container_name: kanban_web
+    command: python manage.py runserver 0.0.0.0:8000
     ports:
-      - "8000:8000"
+      - "8001:8000"
     volumes:
-      - .:/app
+      - .:/app              # Mount current directory into /app
+    depends_on:
+      - db
     environment:
-      - DEBUG=1
-    command: gunicorn kanban.wsgi:application --bind 0.0.0.0:8000 --workers 2
+      POSTGRES_DB: kanban_db
+      POSTGRES_USER: kanban_user
+      POSTGRES_PASSWORD: kanban_pass
+
+  db:
+    image: postgres:15
+    container_name: kanban_db
+    restart: always
+    environment:
+      POSTGRES_DB: kanban_db
+      POSTGRES_USER: kanban_user
+      POSTGRES_PASSWORD: kanban_pass
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: kanban_pgadmin
+    restart: always
+    ports:
+      - "8080:80"    # Access pgAdmin in browser
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    depends_on:
+      - db
+
+
+volumes:
+  postgres_data:
+

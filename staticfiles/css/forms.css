@@ -1,0 +1,27 @@
+/* Small form layout helpers */
+.form-priority-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.form-priority-row label {
+  margin: 0;
+  white-space: nowrap;
+}
+.form-priority-select {
+  min-width: 160px;
+  max-width: 260px;
+}
+.form-checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.form-checkbox-row label {
+  margin: 0;
+  min-width: 160px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
