@@ -2,9 +2,10 @@ version: "3.9"
 
 services:
   web:
-    build:
-      context: .            # Path to your project (where Dockerfile is located)
-      dockerfile: Dockerfile
+    #build:
+    #  context: .            # Path to your project (where Dockerfile is located)
+    #  dockerfile: Dockerfile
+    image: nasir473/kanban-app:latest
     container_name: kanban_web
     command: python manage.py runserver 0.0.0.0:8000
     ports:
