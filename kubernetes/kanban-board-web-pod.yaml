@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: kanban-board-web-pod
+  namespace: kanban
+  labels:
+    app: kanban-board-web
+spec:
+  restartPolicy: Always
+  containers:
+    - name: kanban-board-web
+      image: kanban-board-web:latest
+      imagePullPolicy: IfNotPresent
+      command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+      ports:
+        - containerPort: 8000
+      env:
+        - name: POSTGRES_DB
+          value: "kanban_db"
+        - name: POSTGRES_USER
+          value: "kanban_user"
+        - name: POSTGRES_PASSWORD
+          value: "kanban_pass"
+        # Point to the DB pod/service in the cluster; adjust if your DB service name differs
+        - name: DATABASE_HOST
+          value: "kanban-db"
+      volumeMounts:
+        - name: app-code
+          mountPath: /app
+          # allow read-write so container changes can be persisted (useful for development)
+          readOnly: false
+  volumes:
+    - name: app-code
+      hostPath:
+        # adjust this path if your project root differs on the node
+        path: /Users/mohammednasirudeen/Downloads/DevOps/kubernetes
+        type: Directory

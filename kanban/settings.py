@@ -76,13 +76,24 @@ WSGI_APPLICATION = 'kanban.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'kanban_db',
+#         'USER': 'kanban_user',
+#         'PASSWORD': 'kanban_pass',
+#         'HOST': 'db',  # matches the service name in Docker Compose
+#         'PORT': 5432,
+#     }
+# }
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'kanban_db',
         'USER': 'kanban_user',
         'PASSWORD': 'kanban_pass',
-        'HOST': 'db',  # matches the service name in Docker Compose
+        'HOST': 'kanban-db-svc',  # Kubernetes service name
         'PORT': 5432,
     }
 }

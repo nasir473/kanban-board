@@ -13,13 +13,13 @@ services:
     volumes:
       - .:/app              # Mount current directory into /app
     depends_on:
-      - db
+      - kanban-db-svc
     environment:
       POSTGRES_DB: kanban_db
       POSTGRES_USER: kanban_user
       POSTGRES_PASSWORD: kanban_pass
 
-  db:
+  kanban-db-svc:
     image: postgres:15
     container_name: kanban_db
     restart: always
@@ -40,7 +40,7 @@ services:
       PGADMIN_DEFAULT_EMAIL: admin@admin.com
       PGADMIN_DEFAULT_PASSWORD: admin
     depends_on:
-      - db
+      - kanban-db-svc
 
 
 volumes:
